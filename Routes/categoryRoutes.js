@@ -5,7 +5,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(categoryController.getCategory)
+  .get(categoryController.getAllCategories)
   .post(categoryController.createCategory);
+
+router
+  .route('/:id')
+  .get(categoryController.getCategory)
+  .patch(categoryController.updateCategory)
+  .delete(categoryController.daleteCategory);
 
 module.exports = router;
