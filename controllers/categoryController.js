@@ -1,6 +1,7 @@
 const slugify = require('slugify');
 const asyncHandler = require('express-async-handler');
 const Categroy = require('../models/categoryModel');
+const AppError = require('../utils/appError');
 
 exports.getAllCategories = asyncHandler(async (req, res, next) => {
   const page = req.query.page * 1 || 1;
@@ -22,7 +23,7 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
   const category = await Categroy.findById(id);
 
   if (!category) {
-    res.status(404).json({ msg: 'No category for this id' });
+    return next(new AppError('No category for this id', 404));
   }
 
   res.status(200).json({
@@ -54,7 +55,7 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
   );
 
   if (!category) {
-    res.status(404).json({ msg: 'No category for this id' });
+    return next(new AppError('No category for thdis id', 404));
   }
 
   res.status(200).json({
@@ -69,7 +70,7 @@ exports.daleteCategory = asyncHandler(async (req, res, next) => {
   const category = await Categroy.findByIdAndDelete(req.params.id);
 
   if (!category) {
-    res.status(404).json({ msg: 'No category for this id' });
+    return next(new AppError('No category for this id', 404));
   }
 
   res.status(204).json({
