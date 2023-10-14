@@ -35,7 +35,7 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 });
 
 exports.createCategory = asyncHandler(async (req, res, next) => {
-  const name = req.body.name;
+  const { name } = req.body;
   const newCategroy = await Categroy.create({ name, slug: slugify(name) });
   res.status(201).json({
     status: 'success',
@@ -45,13 +45,15 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
 
 exports.updateCategory = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
+  const { id } = req.params;
+
   const category = await Categroy.findByIdAndUpdate(
-    req.params.id,
+    id,
     { name, slug: slugify(name) },
     {
       new: true,
       runValidators: true,
-    }
+    },
   );
 
   if (!category) {
