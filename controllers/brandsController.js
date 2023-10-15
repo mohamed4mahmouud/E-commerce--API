@@ -10,9 +10,7 @@ exports.getAllBrands = asyncHandler(async (req, res, next) => {
     status: 'success',
     results: brands.length,
     data: {
-      data: {
-        brands,
-      },
+      data: brands,
     },
   });
 });
