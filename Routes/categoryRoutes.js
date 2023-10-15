@@ -1,15 +1,18 @@
 const express = require('express');
 const categoryController = require('../controllers/categoryController');
 const categoryValidator = require('../utils/validators/categoryValidators');
+const subCategoryRouter = require('./subCategoryRoutes');
 
 const router = express.Router();
+
+router.use('/:categoryId/subcategories', subCategoryRouter);
 
 router
   .route('/')
   .get(categoryController.getAllCategories)
   .post(
     categoryValidator.createCategoryValidator,
-    categoryController.createCategory
+    categoryController.createCategory,
   );
 
 router
@@ -17,11 +20,11 @@ router
   .get(categoryValidator.getCategoryValidator, categoryController.getCategory)
   .patch(
     categoryValidator.updateCategoryValidator,
-    categoryController.updateCategory
+    categoryController.updateCategory,
   )
   .delete(
     categoryValidator.deleteCategoryValidator,
-    categoryController.daleteCategory
+    categoryController.daleteCategory,
   );
 
 module.exports = router;

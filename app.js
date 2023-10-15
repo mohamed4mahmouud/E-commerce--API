@@ -3,6 +3,7 @@ const morgan = require('morgan');
 const path = require('path');
 const categoryRouter = require('./Routes/categoryRoutes');
 const subCategoryRouter = require('./Routes/subCategoryRoutes');
+const brandsRouter = require('./Routes/brandsRoutes');
 const AppError = require('./utils/appError');
 const globalError = require('./controllers/errorController');
 
@@ -18,6 +19,7 @@ if (process.env.NODE_ENV === 'development') {
 // Mount Routes
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/subCategory', subCategoryRouter);
+app.use('/api/v1/brand', brandsRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find this route: ${req.originalUrl}`, 400));

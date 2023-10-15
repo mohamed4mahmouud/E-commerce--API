@@ -2,11 +2,12 @@ const express = require('express');
 const subCategoryController = require('../controllers/subCategoryController');
 const subcategoryValidator = require('../utils/validators/subCategoryValidators');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
   .post(
+    subCategoryController.setCategoryIdToBody,
     subcategoryValidator.createSubCategoryValidator,
     subCategoryController.createSubCategory,
   )

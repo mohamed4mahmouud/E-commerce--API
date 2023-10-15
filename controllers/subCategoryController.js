@@ -4,7 +4,10 @@ const SubCategory = require('../models/subCategoryModel');
 const AppError = require('../utils/appError');
 
 exports.getSubCategories = asyncHandler(async (req, res, next) => {
-  const subCategories = await SubCategory.find({});
+  let filterObject = {};
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+
+  const subCategories = await SubCategory.find(filterObject);
 
   res.status(200).json({
     status: 'success',
@@ -12,6 +15,11 @@ exports.getSubCategories = asyncHandler(async (req, res, next) => {
     data: subCategories,
   });
 });
+
+exports.setCategoryIdToBody = (req, res, next) => {
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  next();
+};
 
 exports.createSubCategory = asyncHandler(async (req, res, next) => {
   const { name, category } = req.body;
