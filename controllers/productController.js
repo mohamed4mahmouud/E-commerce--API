@@ -4,7 +4,10 @@ const Product = require('../models/productModel');
 const AppError = require('../utils/appError');
 
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
-  const products = await Product.find({});
+  const products = await Product.find({}).populate({
+    path: 'category',
+    select: 'name -_id',
+  });
 
   res.status(200).json({
     status: 'success',
@@ -16,7 +19,10 @@ exports.getAllProducts = asyncHandler(async (req, res, next) => {
 
 exports.getProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate({
+    path: 'category',
+    select: 'name -_id',
+  });
 
   if (!product) {
     return next(new AppError('No product for this id', 404));
@@ -39,7 +45,9 @@ exports.createProduct = asyncHandler(async (req, res, next) => {
 
 exports.updateProduct = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  req.body.slug = slugify(req.body.title);
+  if (req.body.title) {
+    req.body.slug = slugify(req.body.title);
+  }
 
   const product = await Product.findByIdAndUpdate(id, req.body, {
     new: true,
