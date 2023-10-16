@@ -2,15 +2,21 @@ const slugify = require('slugify');
 const asyncHandler = require('express-async-handler');
 const Product = require('../models/productModel');
 const AppError = require('../utils/appError');
+const ApiFeatures = require('../utils/apiFeatures');
 
 exports.getAllProducts = asyncHandler(async (req, res, next) => {
-  const products = await Product.find({}).populate({
-    path: 'category',
-    select: 'name -_id',
-  });
+  const apiFeatures = new ApiFeatures(Product.find(), req.query)
+    .paginate()
+    .filter()
+    .limitFields()
+    .sort()
+    .search();
+
+  const products = await apiFeatures.query;
 
   res.status(200).json({
     status: 'success',
+    result: products.length,
     data: {
       data: products,
     },

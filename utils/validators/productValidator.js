@@ -1,5 +1,8 @@
 const { check } = require('express-validator');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
+const Category = require('../../models/categoryModel');
+const SubCategory = require('../../models/subCategoryModel');
+const asyncHandler = require('express-async-handler');
 
 exports.createProductValidator = [
   check('title')
@@ -59,9 +62,48 @@ exports.createProductValidator = [
     .notEmpty()
     .withMessage('Product must be belong to category')
     .isMongoId()
-    .withMessage('Invalid id format'),
+    .withMessage('Invalid id format')
+    .custom(
+      asyncHandler(async (categoryId) => {
+        const category = await Category.findById(categoryId);
+        if (!category) {
+          throw new Error('No category for this id');
+        }
+      }),
+    ),
 
-  check('subcategory').optional().isMongoId().withMessage('Invalid id format'),
+  check('subCategories')
+    .optional()
+    .isMongoId()
+    .withMessage('Invalid id format')
+    .custom(
+      asyncHandler(async (subCategoriesIds) => {
+        const subCategories = await SubCategory.find({
+          _id: { $exists: true, $in: subCategoriesIds },
+        });
+        if (
+          subCategories.length === 0 ||
+          subCategories.length !== subCategoriesIds.length
+        ) {
+          throw new Error('No subCategories for this ids');
+        }
+      }),
+    )
+    .custom(
+      asyncHandler(async (val, { req }) => {
+        const subCategories = await SubCategory.find({
+          category: req.body.category,
+        });
+        const subCategoriesIds = [];
+        subCategories.forEach((subcategory) => {
+          subCategoriesIds.push(subcategory._id.toString());
+        });
+        const checker = val.every((e) => subCategoriesIds.includes(e));
+        if (!checker) {
+          throw new Error('subCategories not belong to category');
+        }
+      }),
+    ),
 
   check('brand').optional().isMongoId().withMessage('Invalid id format'),
 
