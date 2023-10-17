@@ -17,6 +17,7 @@
       "import/order":"off",
       "import/no-extraneous-dependencies":"off",
       "node/no-unsupported-features/es-syntax":"off",
+      "no-shadow":"off",
       "prefer-destructuring": ["error", { "object": true, "array": false }],
       "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }]
     }

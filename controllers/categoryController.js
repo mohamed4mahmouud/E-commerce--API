@@ -4,14 +4,21 @@ const Categroy = require('../models/categoryModel');
 const AppError = require('../utils/appError');
 
 exports.getAllCategories = asyncHandler(async (req, res, next) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 2;
-  const skip = (page - 1) * limit;
-  const categories = await Categroy.find({}).skip(skip).limit(limit);
+  const countDocs = await Categroy.countDocuments();
+  const apiFeatures = new ApiFeatures(Categroy.find(), req.query)
+    .filter()
+    .search('Category')
+    .sort()
+    .paginate(countDocs)
+    .limitFields();
+
+  const { query, paginationResault } = apiFeatures;
+  const categories = await query;
+
   res.status(200).json({
     status: 'success',
     results: categories.length,
-    page,
+    paginationResault,
     data: {
       categories,
     },

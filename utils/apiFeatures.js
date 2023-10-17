@@ -6,7 +6,7 @@ class ApiFeatures {
 
   filter() {
     const queryStringObj = { ...this.queryString };
-    const excludesFields = ['page', 'sort', 'limit', 'fields'];
+    const excludesFields = ['page', 'sort', 'limit', 'fields', 'keyword'];
     excludesFields.forEach((field) => delete queryStringObj[field]);
     // Apply filtration using [gte, gt, lte, lt]
     let queryStr = JSON.stringify(queryStringObj);
@@ -40,10 +40,11 @@ class ApiFeatures {
   search(modelName) {
     if (this.queryString.keyword) {
       let query = {};
-      if (modelName === 'Products') {
+      if (modelName === 'Product') {
+        const pattern = new RegExp(`\\b${this.queryString.keyword}`, 'i');
         query.$or = [
-          { title: { $regex: this.queryString.keyword, $options: 'i' } },
-          { description: { $regex: this.queryString.keyword, $options: 'i' } },
+          { title: { $regex: pattern } },
+          { description: { $regex: pattern } },
         ];
       } else {
         query = { name: { $regex: this.queryString.keyword, $options: 'i' } };
@@ -54,12 +55,19 @@ class ApiFeatures {
     return this;
   }
 
-  paginate() {
+  paginate(countDocs) {
     const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 50;
+    const limit = this.queryString.limit * 1 || 5;
     const skip = (page - 1) * limit;
 
+    const pagination = {};
+    pagination.currentPage = page;
+    pagination.limit = limit;
+    pagination.numberOfPages = Math.ceil(countDocs / limit);
+
     this.query = this.query.skip(skip).limit(limit);
+
+    this.paginationResault = pagination;
     return this;
   }
 }

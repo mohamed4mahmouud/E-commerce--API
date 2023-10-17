@@ -2,12 +2,23 @@ const slugify = require('slugify');
 const asyncHandler = require('express-async-handler');
 const Brand = require('../models/brandsModel');
 const AppError = require('../utils/appError');
+const ApiFeatures = require('../utils/apiFeatures');
 
 exports.getAllBrands = asyncHandler(async (req, res, next) => {
-  const brands = await Brand.find({});
+  const countDocs = await Brand.countDocuments();
+  const apiFeatures = new ApiFeatures(Brand.find(), req.query)
+    .filter()
+    .search('Brand')
+    .sort()
+    .paginate(countDocs)
+    .limitFields();
+
+  const { query, paginationResault } = apiFeatures;
+  const brands = await query;
 
   res.status(200).json({
     status: 'success',
+    paginationResault,
     results: brands.length,
     data: {
       data: brands,
