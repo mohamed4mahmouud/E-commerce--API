@@ -57,7 +57,7 @@ class ApiFeatures {
 
   paginate(countDocs) {
     const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 5;
+    const limit = this.queryString.limit * 1 || 50;
     const skip = (page - 1) * limit;
 
     const pagination = {};
