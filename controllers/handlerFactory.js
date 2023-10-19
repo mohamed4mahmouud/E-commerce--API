@@ -1,4 +1,3 @@
-const slugify = require('slugify');
 const asyncHandler = require('express-async-handler');
 const AppError = require('../utils/appError');
 const ApiFeatures = require('../utils/apiFeatures');
