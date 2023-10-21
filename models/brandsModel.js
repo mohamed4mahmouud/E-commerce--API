@@ -18,6 +18,13 @@ const brandsScehma = new mongoose.Schema(
   { timestamps: true },
 );
 
+brandsScehma.post('init', function (doc) {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+    doc.image = imageUrl;
+  }
+});
+
 const Brands = mongoose.model('Brands', brandsScehma);
 
 module.exports = Brands;

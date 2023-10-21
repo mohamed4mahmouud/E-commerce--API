@@ -8,6 +8,8 @@ router
   .route('/')
   .get(productController.getAllProducts)
   .post(
+    productController.uploadProductImages,
+    productController.resizeProductImages,
     productValidator.createProductValidator,
     productController.createProduct,
   );
@@ -16,6 +18,8 @@ router
   .route('/:id')
   .get(productValidator.getProductValidator, productController.getProduct)
   .patch(
+    productController.uploadProductImages,
+    productController.resizeProductImages,
     productValidator.updateProductValidator,
     productController.updateProduct,
   )
