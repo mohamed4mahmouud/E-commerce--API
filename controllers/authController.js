@@ -33,9 +33,13 @@ exports.signUp = asyncHandler(async (req, res, next) => {
 });
 
 exports.login = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+  const { password, email } = req.body;
+  if ((!email, !password)) {
+    return next(new AppError('Please provide email and password!', 400));
+  }
+  const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await bcrypt.compare(req.body.password, user.password))) {
+  if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
 
@@ -159,6 +163,19 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   await user.save();
 
   //generate token
-  const token = createToken(user.id);
+  const token = createToken(user._id);
   res.status(200).json({ token });
+});
+
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is wrong', 401));
+  }
+
+  user.password = req.body.password;
+  await user.save();
+
+  res.status(200).json({ data: user });
 });

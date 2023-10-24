@@ -1,5 +1,6 @@
 const { check } = require('express-validator');
 const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcryptjs');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 const User = require('../../models/userModel');
 
@@ -58,5 +59,23 @@ exports.forgotPasswordValidator = [
     .withMessage('Please Enter your email')
     .isEmail()
     .withMessage('Invalid Email'),
+  validatorMiddleware,
+];
+
+exports.updatePasswordValidator = [
+  check('passwordCurrent')
+    .notEmpty()
+    .withMessage('Please enter your current password'),
+  check('passwordConfirm')
+    .notEmpty()
+    .withMessage('Please confirm your password')
+    .custom((val, { req }) => {
+      if (val !== req.body.password) {
+        throw new Error('passwords are not the same');
+      }
+      return true;
+    }),
+  check('password').notEmpty().withMessage('Enter your new password'),
+
   validatorMiddleware,
 ];

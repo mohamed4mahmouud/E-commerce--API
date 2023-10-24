@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
+const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const handlerFactory = require('./handlerFactory');
 const uploadImage = require('../middlewares/uploadImageMiddleware');
@@ -46,6 +47,11 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
     status: 'success',
     data: updatedUser,
   });
+});
+
+exports.getMe = asyncHandler(async (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
 });
 
 exports.getAllUsers = handlerFactory.getAll(User);
