@@ -1,5 +1,6 @@
 const express = require('express');
 const subCategoryController = require('../controllers/subCategoryController');
+const authController = require('../controllers/authController');
 const subcategoryValidator = require('../utils/validators/subCategoryValidators');
 
 const router = express.Router({ mergeParams: true });
@@ -7,6 +8,8 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .post(
+    authController.protect,
+    authController.restrictTo('admin'),
     subCategoryController.setCategoryIdToBody,
     subcategoryValidator.createSubCategoryValidator,
     subCategoryController.createSubCategory,
@@ -20,10 +23,14 @@ router
     subCategoryController.getSubCategory,
   )
   .patch(
+    authController.protect,
+    authController.restrictTo('admin'),
     subcategoryValidator.updateSubCategoryValidator,
     subCategoryController.updateSubCategory,
   )
   .delete(
+    authController.protect,
+    authController.restrictTo('admin'),
     subcategoryValidator.deleteSubCategoryValidator,
     subCategoryController.deleteSubCategory,
   );

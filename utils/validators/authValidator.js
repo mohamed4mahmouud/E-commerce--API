@@ -26,7 +26,7 @@ exports.signUpValidator = [
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters')
     .custom((pass, { req }) => {
-      if (pass !== req.body.passwordConfirm) {
+      if (pass !== req.body.passwordConfirm && req.body.passwordConfirm) {
         throw new Error('Passwords are not the same');
       }
       return true;
@@ -40,10 +40,23 @@ exports.signUpValidator = [
 ];
 
 exports.loginValidator = [
-  check('email').notEmpty().withMessage('Please Enter your email').isEmail(),
+  check('email')
+    .notEmpty()
+    .withMessage('Please Enter your email')
+    .isEmail()
+    .withMessage('Invalid Email'),
   check('password')
     .notEmpty()
     .withMessage('User must have a password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters'),
+];
+
+exports.forgotPasswordValidator = [
+  check('email')
+    .notEmpty()
+    .withMessage('Please Enter your email')
+    .isEmail()
+    .withMessage('Invalid Email'),
+  validatorMiddleware,
 ];

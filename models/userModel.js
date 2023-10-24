@@ -23,10 +23,11 @@ const userSchema = new mongoose.Schema(
       required: [true, 'User must have a password'],
       minLength: [8, 'Too short password'],
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, 'Please confirm password'],
-    },
+
+    passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    passwordResetVerifed: Boolean,
     role: {
       type: String,
       enum: ['user', 'admin'],
@@ -44,9 +45,19 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   //hash password
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changeTimeStamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+    return JWTTimestamp < changeTimeStamp;
+  }
+  return false;
+};
 
 const UserModel = mongoose.model('User', userSchema);
 
