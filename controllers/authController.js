@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
+const { promisify } = require('util');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/appError');
@@ -19,7 +20,6 @@ exports.signUp = asyncHandler(async (req, res, next) => {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
   });
 
   //Generate token
@@ -65,7 +65,10 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new AppError('you are not logged in', 401));
   }
   //verfiy token
-  const decoded = jwt.verify(token, process.env.JWT_SECERT_KEY);
+  const decoded = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECERT_KEY,
+  );
 
   //check if user exist
   const currentUser = await User.findById(decoded.id);
