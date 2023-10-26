@@ -37,7 +37,7 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
   }
   const filteredBody = filterObj(req.body, 'name', 'email', 'phone');
   if (req.file) filteredBody.photo = req.body.photo;
-  const updatedUser = await User.findByIdAndUpdate(req.param.id, filteredBody, {
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
   });
   if (!updatedUser) {
@@ -52,6 +52,13 @@ exports.updateMe = asyncHandler(async (req, res, next) => {
 exports.getMe = asyncHandler(async (req, res, next) => {
   req.params.id = req.user.id;
   next();
+});
+
+exports.deleteMe = asyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: 'success',
+  });
 });
 
 exports.getAllUsers = handlerFactory.getAll(User);

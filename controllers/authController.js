@@ -1,6 +1,5 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
-const { promisify } = require('util');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/appError');
@@ -65,10 +64,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new AppError('you are not logged in', 401));
   }
   //verfiy token
-  const decoded = await promisify(jwt.verify)(
-    token,
-    process.env.JWT_SECERT_KEY,
-  );
+  const decoded = jwt.verify(token, process.env.JWT_SECERT_KEY);
 
   //check if user exist
   const currentUser = await User.findById(decoded.id);
@@ -101,7 +97,11 @@ exports.restrictTo = (...roles) =>
 
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   //get user by email
-  const user = await User.findOne({ email: req.body.email });
+  const { email } = req.body;
+  if (!email) {
+    return next(new AppError('Please provide email', 400));
+  }
+  const user = await User.findOne({ email });
   if (!user) {
     return next(new AppError('There is no user with that email', 404));
   }

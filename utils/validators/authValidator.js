@@ -53,15 +53,6 @@ exports.loginValidator = [
     .withMessage('Password must be at least 8 characters'),
 ];
 
-exports.forgotPasswordValidator = [
-  check('email')
-    .notEmpty()
-    .withMessage('Please Enter your email')
-    .isEmail()
-    .withMessage('Invalid Email'),
-  validatorMiddleware,
-];
-
 exports.updatePasswordValidator = [
   check('passwordCurrent')
     .notEmpty()
