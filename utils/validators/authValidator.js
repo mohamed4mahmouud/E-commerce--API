@@ -1,6 +1,5 @@
 const { check } = require('express-validator');
 const asyncHandler = require('express-async-handler');
-const bcrypt = require('bcryptjs');
 const validatorMiddleware = require('../../middlewares/validatorMiddleware');
 const User = require('../../models/userModel');
 
