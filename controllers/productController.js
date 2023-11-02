@@ -1,8 +1,9 @@
-const asynchandler = require('express-async-handler');
+const asyncHandler = require('express-async-handler');
 const sharp = require('sharp');
 const { v4: uuidv4 } = require('uuid');
 const Product = require('../models/productModel');
 const handlerFactory = require('./handlerFactory');
+const AppError = require('../utils/appError');
 const uploadMixOfImages = require('../middlewares/uploadImageMiddleware');
 
 exports.uploadProductImages = uploadMixOfImages.uploadMixOfImages([
@@ -10,7 +11,7 @@ exports.uploadProductImages = uploadMixOfImages.uploadMixOfImages([
   { name: 'images', maxCount: 3 },
 ]);
 
-exports.resizeProductImages = asynchandler(async (req, res, next) => {
+exports.resizeProductImages = asyncHandler(async (req, res, next) => {
   if (req.files.imageCover) {
     const imageCoverName = `product-${uuidv4()}-${Date.now()}-cover.jpeg`;
 
@@ -43,7 +44,17 @@ exports.resizeProductImages = asynchandler(async (req, res, next) => {
 });
 
 exports.getAllProducts = handlerFactory.getAll(Product, 'Product');
-exports.getProduct = handlerFactory.getOne(Product);
+exports.getProduct = asyncHandler(async (req, res, next) => {
+  const product = await Product.findById(req.params.id).populate('reviews');
+
+  if (!product) {
+    return next(new AppError('No product for this id', 404));
+  }
+  res.status(200).json({
+    status: 'success',
+    data: product,
+  });
+});
 exports.createProduct = handlerFactory.createOne(Product);
 exports.updateProduct = handlerFactory.updateOne(Product);
 exports.deleteProduct = handlerFactory.deleteOne(Product);

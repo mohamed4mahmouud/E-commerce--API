@@ -40,7 +40,7 @@ exports.updateReviewValidator = [
       if (!review) {
         throw new Error('No review for this id');
       }
-      if (review.user.toString() !== req.user.id.toString()) {
+      if (review.user._id.toString() !== req.user.id.toString()) {
         throw new Error('You are not allowed to perform this action');
       }
     }),
@@ -57,7 +57,7 @@ exports.deleteReviewValidator = [
         if (!review) {
           throw new Error('No review for this id');
         }
-        if (review.user.toString() !== req.user.id) {
+        if (review.user._id.toString() !== req.user.id.toString()) {
           throw new Error('You are not allowed to perform this action');
         }
       }

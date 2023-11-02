@@ -9,6 +9,8 @@ exports.deleteOne = (Model) =>
     if (!document) {
       return next(new AppError('No document for this id', 404));
     }
+
+    document.remove();
     res.status(204).json({
       status: 'success',
       data: null,
@@ -23,6 +25,7 @@ exports.updateOne = (Model) =>
     if (!document) {
       return next(new AppError('No document for this id', 404));
     }
+    document.save();
     res.status(200).json({
       status: 'success',
       data: document,
@@ -55,7 +58,9 @@ exports.getOne = (Model) =>
 exports.getAll = (Model, modelName = ' ') =>
   asyncHandler(async (req, res, next) => {
     let filter = {};
-    if (req.params.categoryId) filter = { category: req.params.categoryId };
+    if (req.filterObj) {
+      filter = req.filterObj;
+    }
     const countDocs = await Model.countDocuments();
     const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
       .filter()

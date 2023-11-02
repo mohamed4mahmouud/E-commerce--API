@@ -14,7 +14,10 @@ router
     subcategoryValidator.createSubCategoryValidator,
     subCategoryController.createSubCategory,
   )
-  .get(subCategoryController.getSubCategories);
+  .get(
+    subCategoryController.createFilter,
+    subCategoryController.getSubCategories,
+  );
 
 router
   .route('/:id')

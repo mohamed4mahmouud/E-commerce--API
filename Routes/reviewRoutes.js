@@ -3,14 +3,15 @@ const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
 const reviewValidator = require('../utils/validators/reviewValidator');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
-  .get(reviewController.getAllReviews)
+  .get(reviewController.createFilter, reviewController.getAllReviews)
   .post(
     authController.protect,
     authController.restrictTo('user'),
+    reviewController.setProductIdAndUserToBody,
     reviewValidator.createReviewValidator,
     reviewController.createReview,
   );
