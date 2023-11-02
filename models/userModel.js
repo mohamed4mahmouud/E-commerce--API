@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    wishList: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Product',
+      },
+    ],
   },
   { timestamps: true },
 );
