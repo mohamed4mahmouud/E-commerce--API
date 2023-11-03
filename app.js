@@ -8,6 +8,7 @@ const productRouter = require('./Routes/productRoutes');
 const userRouter = require('./Routes/userRoutes');
 const reviewRouter = require('./Routes/reviewRoutes');
 const wishListRouter = require('./Routes/wishListRoutes');
+const addressRouter = require('./Routes/addressRoutes');
 const AppError = require('./utils/appError');
 const globalError = require('./controllers/errorController');
 
@@ -29,6 +30,7 @@ app.use('/api/v1/products', productRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/wishlist', wishListRouter);
+app.use('/api/v1/address', addressRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find this route: ${req.originalUrl}`, 400));
