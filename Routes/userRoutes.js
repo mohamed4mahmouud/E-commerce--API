@@ -16,6 +16,8 @@ router.use(authController.protect);
 
 router.patch(
   '/updateMe',
+  userController.uploadUserImage,
+  userController.resizaUserImage,
   userValidator.updateLoggedUserValidator,
   userController.updateMe,
 );
